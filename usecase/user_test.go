@@ -3,40 +3,14 @@ package usecase_test
 import (
 	"testing"
 
+	"kuwa72/sample-gorm-txdb-testing/testutil"
 	"kuwa72/sample-gorm-txdb-testing/usecase"
 
-	"github.com/DATA-DOG/go-txdb"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
-const dsn = "file::memory:?cache=shared"
-
-func initDB(db *gorm.DB) {
-	db.AutoMigrate(usecase.User{})
-}
-
-func NewTestDB(name string) (*gorm.DB, error) {
-	txdb.Register(name, "sqlite3", dsn)
-	dialector := sqlite.New(sqlite.Config{
-		DriverName: name,
-		DSN:        dsn,
-	})
-
-	db, err := gorm.Open(dialector, &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
-	if err != nil {
-		return nil, err
-	}
-	initDB(db)
-	return db, nil
-}
-
 func TestLoginUser(t *testing.T) {
-	db, _ := NewTestDB("TestLoginUser")
+	db, _ := testutil.NewTestDB("TestLoginUser")
 	defer func() {
 		db, _ := db.DB()
 		db.Close()
@@ -103,7 +77,7 @@ func TestLoginUser(t *testing.T) {
 }
 
 func TestCreateUser(t *testing.T) {
-	db, _ := NewTestDB("TestCreateUser")
+	db, _ := testutil.NewTestDB("TestCreateUser")
 	defer func() {
 		db, _ := db.DB()
 		db.Close()
